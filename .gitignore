@@ -1,0 +1,26 @@
+# Compiled source #
+###################
+*.class
+*.pyc
+
+# Build and downloads (e.g. Wikipedia in XML dump) folders #
+############
+/downloads
+/out
+
+# Logs and databases #
+######################
+*.log
+
+# Intellij project files
+*.iml
+.idea/
+
+# Backups #
+###########
+*~
+
+# Other files #
+##############
+esadb.db
+example/esa_bg.en.sql
