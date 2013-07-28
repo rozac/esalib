@@ -13,12 +13,12 @@ public class PrepareWikiDb {
 
 	public static void main(String[] args) throws SQLException, ClassNotFoundException {
 		AppConfig cfg = AppConfig.getInstance();
-		cfg.setSection("PrepareWikiDb");
+        cfg.setSection("PrepareWikiDb");
 
-		String connStr = cfg.getString("db");
-		String disambigStr = cfg.getString("disambigStr");
-		String hnDisambigStr = cfg.getString("hnDisambigStr");
-		String lang = cfg.getString("lang");
+        String connStr = AppConfig.getInstance().getString("PrepareWikiDb.db");
+		String disambigStr = AppConfig.getInstance().getString("PrepareWikiDb.disambigStr");
+		String hnDisambigStr = AppConfig.getInstance().getString("PrepareWikiDb.hnDisambigStr");
+		String lang = AppConfig.getInstance().getString("PrepareWikiDb.lang");
 
 		DBConfig dbc = new DBConfig();
 		dbc.setConnectionFromDrupalUrl(connStr);
@@ -107,7 +107,9 @@ public class PrepareWikiDb {
 			case 5:
 				// find disambiguation pages
 				db.executeUpdate(
-					"CREATE TABLE page_disambig AS SELECT rev_page FROM revision r LEFT JOIN text t ON r.rev_text_id = t.old_id WHERE t.old_text LIKE \"%{{" + disambigStr + "%\" OR t.old_text LIKE \"%{{" + hnDisambigStr + "%\"");
+					"CREATE TABLE page_disambig AS SELECT rev_page FROM revision r LEFT JOIN text t " +
+                            "ON r.rev_text_id = t.old_id WHERE t.old_text LIKE \"%{{" + disambigStr + "%\" " +
+                            "OR t.old_text LIKE \"%{{" + hnDisambigStr + "%\"");
 				db.executeUpdate(
 					"ALTER TABLE page_concepts ADD INDEX ndx_page_id (page_id ASC)");
 				db.executeUpdate(
@@ -124,8 +126,13 @@ public class PrepareWikiDb {
 			case 7:
 				try {
 					db.executeUpdate("DROP TABLE IF EXISTS concept_mapping");
-					db.executeUpdate("CREATE TABLE concept_mapping AS SELECT langlinks.ll_from as concept_id, page.page_id as page_id FROM page LEFT JOIN langlinks ON langlinks.ll_title = page.page_title WHERE ll_lang = '" + lang + "' AND ll_title != ''");
-					db.executeUpdate("ALTER TABLE concept_mapping ADD INDEX ndx_page_id (page_id ASC), ADD INDEX ndx_concept_id (concept_id ASC)");
+					db.executeUpdate("CREATE TABLE concept_mapping AS " +
+                            "SELECT langlinks.ll_from as concept_id, page.page_id as page_id FROM page " +
+                            "LEFT JOIN langlinks " +
+                            "ON langlinks.ll_title = page.page_title " +
+                            "WHERE ll_lang = '" + lang + "' AND ll_title != ''");
+					db.executeUpdate(
+                            "ALTER TABLE concept_mapping ADD INDEX ndx_page_id (page_id ASC), ADD INDEX ndx_concept_id (concept_id ASC)");
 				} catch (Exception e) {
 					System.out.println("> concept_mapping cannot be created: " + e);
 				}
@@ -133,10 +140,16 @@ public class PrepareWikiDb {
 
 			case 8:
 				try {
-					db.executeUpdate("DROP TABLE IF EXISTS redirect_mapping");
-					db.executeUpdate("CREATE TABLE redirect_mapping AS SELECT redirect.rd_from as page_id, page.page_id as dest_page_id FROM redirect LEFT JOIN page ON replace(redirect.rd_title, '_', ' ') = page.page_title");
-					db.executeUpdate("ALTER TABLE redirect_mapping ADD INDEX ndx_page_id (page_id ASC), ADD INDEX ndx_dest_page_Id (dest_page_id ASC)");
-				} catch (Exception e) {
+                    System.out.println("hello 0");
+                    db.executeUpdate("DROP TABLE IF EXISTS redirect_mapping");
+                    System.out.println("hello 1");
+                    db.executeUpdate("CREATE TABLE redirect_mapping AS SELECT redirect.rd_from as page_id, page.page_id " +
+                            "as dest_page_id FROM redirect LEFT JOIN page ON replace(redirect.rd_title, '_', ' ') = page.page_title");
+                    System.out.println("hello 2");
+                    db.executeUpdate("ALTER TABLE redirect_mapping ADD INDEX ndx_page_id (page_id ASC), " +
+                            "ADD INDEX ndx_dest_page_Id (dest_page_id ASC)");
+                    System.out.println("hello 3");
+                } catch (Exception e) {
 					System.out.println("> redirect_mapping cannot be created: " + e);
 				}
 			System.out.println("> redirect_mapping has been created");

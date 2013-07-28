@@ -46,7 +46,8 @@ public class ArticleIndexer {
 	 * @throws LockObtainFailedException
 	 * @throws IOException 
 	 */
-	public ArticleIndexer(String indexDir, String stopWordsFile, String stemmer, String lang) throws CorruptIndexException, LockObtainFailedException, IOException {
+	public ArticleIndexer(String indexDir, String stopWordsFile, String stemmer, String lang)
+            throws CorruptIndexException, LockObtainFailedException, IOException {
 		// initialize LUCENE index
 		Directory fsDir = FSDirectory.open(new File(indexDir));
 
@@ -112,7 +113,8 @@ public class ArticleIndexer {
 	 * @throws SQLException
 	 * @throws ClassNotFoundException 
 	 */
-	public static void main(String[] args) throws CorruptIndexException, LockObtainFailedException, IOException, SQLException, ClassNotFoundException {
+	public static void main(String[] args) throws CorruptIndexException, LockObtainFailedException,
+            IOException, SQLException, ClassNotFoundException {
 		// create the indexer
 		ArticleIndexer ai = new ArticleIndexer(
 			AppConfig.getInstance().getString("ArticleIndexer.indexPath"), 
@@ -128,7 +130,7 @@ public class ArticleIndexer {
 
 		// load the query for iterating over the articles in the database
 		String articleIter = AppConfig.getInstance().getString("ArticleIndexer.query.articleIter");
-		PreparedStatement ps = db.getConnection().prepareStatement(articleIter);
+        PreparedStatement ps = db.getConnection().prepareStatement(articleIter);
 		if (args.length > 0) {
 			ps.setInt(1, Integer.parseInt(args[0]));
 		} else {
@@ -142,8 +144,10 @@ public class ArticleIndexer {
 		int cntrX = 0;
 
 		// start iterating over the articles, insert each article into database
-		ResultSet rs = ps.executeQuery();
-		while (true) {
+        System.out.println(articleIter);
+        ResultSet rs = ps.executeQuery();
+        System.out.println(ps);
+        while (true) {
 			int lastId = -1;
 			while (rs.next()) {
 				try {
