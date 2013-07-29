@@ -17,7 +17,6 @@ public class PrepareWikiDb {
 
         String connStr = AppConfig.getInstance().getString("PrepareWikiDb.db");
 		String disambigStr = AppConfig.getInstance().getString("PrepareWikiDb.disambigStr");
-		String hnDisambigStr = AppConfig.getInstance().getString("PrepareWikiDb.hnDisambigStr");
 		String lang = AppConfig.getInstance().getString("PrepareWikiDb.lang");
 
 		DBConfig dbc = new DBConfig();
@@ -108,8 +107,21 @@ public class PrepareWikiDb {
 				// find disambiguation pages
 				db.executeUpdate(
 					"CREATE TABLE page_disambig AS SELECT rev_page FROM revision r LEFT JOIN text t " +
-                            "ON r.rev_text_id = t.old_id WHERE t.old_text LIKE \"%{{" + disambigStr + "%\" " +
-                            "OR t.old_text LIKE \"%{{" + hnDisambigStr + "%\"");
+                            "ON r.rev_text_id = t.old_id WHERE t.old_text LIKE \"%{{" + disambigStr + "%\" ");
+
+                /*
+                <disambigStr>disambig</disambigStr>
+                <hnDisambigStr>hndis</hnDisambigStr>
+                 sprawdzic to
+
+                 t.old_text LIKE "%{{hndis%"
+                 t.old_text LIKE "%{{disambig%" <-- nie ma
+                 {{Ujednoznacznienie}}
+                 ujednoznaczenienie, strony ujednoznaczniające
+                 Kategoria:Strony_ujednoznaczniające
+                 http://pl.wikipedia.org/wiki/Szablon:Ujednoznacznienie
+                 */
+
 				db.executeUpdate(
 					"ALTER TABLE page_concepts ADD INDEX ndx_page_id (page_id ASC)");
 				db.executeUpdate(
@@ -120,7 +132,7 @@ public class PrepareWikiDb {
 				db.executeUpdate(
 					"DELETE page_concepts FROM page_concepts INNER JOIN page_disambig pd ON page_id = pd.rev_page");
 
-
+            System.out.println("> Stage 6 is finished.");
 
 
 			case 7:
@@ -140,7 +152,6 @@ public class PrepareWikiDb {
 
 			case 8:
 				try {
-                    System.out.println("hello 0");
                     db.executeUpdate("DROP TABLE IF EXISTS redirect_mapping");
                     System.out.println("hello 1");
                     db.executeUpdate("CREATE TABLE redirect_mapping AS SELECT redirect.rd_from as page_id, page.page_id " +

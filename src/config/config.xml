@@ -4,14 +4,13 @@
 	<ESAIndexBuilder:kw>
 		<lang>kw</lang>
 		<db>mysql://root:root@localhost/kwesa_test</db>
-		<esaIndexPath>/tmp/ndx_kw</esaIndexPath>
+		<esaIndexPath>/tmp/ndx_pl</esaIndexPath>
 		<minTermFreq>1</minTermFreq>
 	</ESAIndexBuilder:kw>
 
     <PrepareWikiDb>
         <db>mysql://root:dupa@localhost/esa_pl</db>
-        <disambigStr>disambig</disambigStr>
-        <hnDisambigStr>hndis</hnDisambigStr>
+        <disambigStr>Ujednoznacznienie</disambigStr>
         <lang>pl</lang>
     </PrepareWikiDb>
 
@@ -21,7 +20,7 @@
 		<stopwordsFile>res/stopwords.pl.txt</stopwordsFile>
 		<stemmerClass>org.getopt.stempel.Stemmer</stemmerClass>
 		<query>
-			<articleIter>SELECT page_id AS id\, page_id AS page_id\, 'cs' AS lang\, '' AS page_title\, text AS content
+			<articleIter>SELECT page_id AS id, page_id AS page_id, 'pl' AS lang, '' AS page_title, text AS content
                 FROM page WHERE page_id > ? LIMIT 100</articleIter>
 		</query>
 	</ArticleIndexer>

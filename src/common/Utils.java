@@ -121,8 +121,8 @@ public class Utils {
 	public static String stem(String word) {
 		word = word.replaceAll("\\W", " ");
 		word = word.replaceAll("  ", " ");
-
-		String res = "";
+        System.out.println("Stemming part, add Polish exception");
+        String res = "";
 		String[] parts = word.split(" ");
 		for(String p : parts) {
 			org.tartarus.snowball.ext.PorterStemmer ps = new org.tartarus.snowball.ext.PorterStemmer();

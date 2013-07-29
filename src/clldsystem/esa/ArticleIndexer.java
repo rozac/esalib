@@ -150,7 +150,9 @@ public class ArticleIndexer {
         while (true) {
 			int lastId = -1;
 			while (rs.next()) {
-				try {
+                System.out.println("100 artykulow do przetwrzenia");
+                System.out.println(lastId);
+                try {
 					StringWriter writer = new StringWriter();
 					InputStream contentStream = rs.getBinaryStream("content");
 					IOUtils.copy(contentStream, writer, "UTF8");
@@ -159,13 +161,9 @@ public class ArticleIndexer {
 					ai.addArticle(rs.getString("page_id"), rs.getString("page_title"), content);
 					lastId = rs.getInt("page_id");
 					cntrX += 1;
-					if (System.currentTimeMillis() - time
-						> 1000) {
+					if (System.currentTimeMillis() - time > 1000) {
 						cntr += cntrX;
-						System.out.println("Processed: "
-							+ cntrX
-							+ "/1 second [total: "
-							+ cntr + "]");
+						System.out.println("Processed: " + cntrX + "/1 second [total: "	+ cntr + "]");
 						time = System.currentTimeMillis();
 						cntrX = 0;
 					}
