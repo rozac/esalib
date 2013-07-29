@@ -10,11 +10,13 @@ cd esalib
 ln -s example/esa_en.db esadb.db
 ./run_analyzer "computer" "apple"
 
+mkdir downloads
 cd downloads
-wget http://dumps.wikimedia.org/plwiki/latest/plwiki-latest-pages-articles1.xml.bz2\
+wget http://dumps.wikimedia.org/plwiki/latest/plwiki-latest-pages-articles1.xml.bz2
 bzip2 -d plwiki-latest-pages-articles1.xml.bz2
 
 sudo apt-get install mysql-server mysql-client
+# I set password 'pass' for the root user
 
 
 
