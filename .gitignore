@@ -16,6 +16,7 @@ esalib.jar
 # Intellij project files
 *.iml
 .idea/
+MANIFEST.MF
 
 # Backups #
 ###########

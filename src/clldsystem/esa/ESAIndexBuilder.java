@@ -427,6 +427,7 @@ public class ESAIndexBuilder {
 
 		reader.close();
 
+
 	}
 
 	/**

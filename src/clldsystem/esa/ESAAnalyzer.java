@@ -506,11 +506,13 @@ public class ESAAnalyzer {
 	}
 
 	public static void main(String[] args) throws SQLException, ClassNotFoundException, IOException {
-		AppConfig cfg = AppConfig.getInstance();
-		cfg.setSection("ESAAnalyzer");
-		
-		ESAAnalyzer esa = new ESAAnalyzer(new DB(cfg.getSString("db")), cfg.getSString("lang"));
-		esa.setAnalyzer(new LUCENEWikipediaAnalyzer(cfg.getSString("stopWordsFile"), cfg.getSString("stemmerClass")));
+
+        System.out.println(AppConfig.getInstance().getString("ESAAnalyzer.stopWordsFile"));
+
+        ESAAnalyzer esa = new ESAAnalyzer(new DB(AppConfig.getInstance().getString("ESAAnalyzer.db")),
+                AppConfig.getInstance().getString("ESAAnalyzer.lang"));
+		esa.setAnalyzer(new LUCENEWikipediaAnalyzer(AppConfig.getInstance().getString("ESAAnalyzer.stopWordsFile"),
+                AppConfig.getInstance().getString("ESAAnalyzer.stemmerClass")));
 		System.out.println(esa.getRelatedness(args[0], args[1]));
 		//System.out.println(esa.getRelatedness("bull", "cow"));
 	}
