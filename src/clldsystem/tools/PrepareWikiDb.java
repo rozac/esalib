@@ -56,7 +56,7 @@ public class PrepareWikiDb {
 				} catch (SQLException e) {
 				}
 
-
+                System.out.println("> Stage 1 is finished.");
 
 			case 2:
 				try {
@@ -85,6 +85,8 @@ public class PrepareWikiDb {
 				} catch (SQLException e) {
 				}
 
+                System.out.println("> Stage 2 is finished.");
+
 			case 3:
 				// add indexes
 				db.executeUpdate(
@@ -98,10 +100,14 @@ public class PrepareWikiDb {
 				db.executeUpdate(
 					"ALTER IGNORE TABLE revision ADD INDEX index1 (rev_text_id ASC), ADD INDEX index2 (`rev_page` ASC);");
 
+                System.out.println("> Stage 3 is finished.");
+
 			case 4:
 				// select only pages that are in default namespace and not redirects
 				db.executeUpdate(
 					"CREATE TABLE page_concepts AS SELECT * FROM page WHERE page_namespace = 0 AND page_is_redirect = 0");
+
+                System.out.println("> Stage 4 is finished.");
 
 			case 5:
 				// find disambiguation pages
@@ -127,12 +133,14 @@ public class PrepareWikiDb {
 				db.executeUpdate(
 					"ALTER TABLE page_disambig ADD INDEX ndx_rev_page (rev_page ASC)");
 
+                System.out.println("> Stage 5 is finished.");
+
 			case 6:
 				// delete disambiguation pages
 				db.executeUpdate(
 					"DELETE page_concepts FROM page_concepts INNER JOIN page_disambig pd ON page_id = pd.rev_page");
 
-            System.out.println("> Stage 6 is finished.");
+                System.out.println("> Stage 6 is finished.");
 
 
 			case 7:
@@ -148,7 +156,8 @@ public class PrepareWikiDb {
 				} catch (Exception e) {
 					System.out.println("> concept_mapping cannot be created: " + e);
 				}
-			System.out.println("> concept_mapping has been created");
+			    System.out.println("> concept_mapping has been created");
+                System.out.println("> Stage 6 is finished.");
 
 			case 8:
 				try {

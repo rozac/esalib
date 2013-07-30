@@ -437,15 +437,14 @@ public class ESAIndexBuilder {
 	 * @throws SQLException 
 	 */
 	public static void main(String[] args) throws IOException, ClassNotFoundException, SQLException {
-		AppConfig cfg = AppConfig.getInstance();
-		cfg.setSection("ESAIndexBuilder");
 
-		DBConfig dbc = new DBConfig();
-		dbc.setConnectionFromDrupalUrl(cfg.getSString("db"));
+        DBConfig dbc = new DBConfig();
+		dbc.setConnectionFromDrupalUrl(AppConfig.getInstance().getString("ESAIndexBuilder.db"));
 
 		DB db = new DB(dbc);
 
-		ESAIndexBuilder.setMinTermFreq(cfg.getSInt("minTermFreq"));
-		ESAIndexBuilder.modify(db, cfg.getSString("lang"), cfg.getSString("esaIndexPath"));
+		ESAIndexBuilder.setMinTermFreq(1);
+		ESAIndexBuilder.modify(db, AppConfig.getInstance().getString("ESAIndexBuilder.lang"),
+                AppConfig.getInstance().getString("ESAIndexBuilder.esaIndexPath"));
 	}
 }

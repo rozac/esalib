@@ -117,7 +117,8 @@ public class ArticleIndexer {
             IOException, SQLException, ClassNotFoundException {
 		// create the indexer
 		ArticleIndexer ai = new ArticleIndexer(
-			AppConfig.getInstance().getString("ArticleIndexer.indexPath"), 
+			//AppConfig.getInstance().getString("ArticleIndexer.indexPath"),
+            AppConfig.getInstance().getString("ArticleIndexer.indexPath"),
 			AppConfig.getInstance().getString("ArticleIndexer.stopwordsFile"), 
 			AppConfig.getInstance().getString("ArticleIndexer.stemmerClass"), 
 			AppConfig.getInstance().getString("ArticleIndexer.lang")
