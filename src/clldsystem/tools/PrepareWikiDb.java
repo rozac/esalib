@@ -17,7 +17,6 @@ public class PrepareWikiDb {
 
         String connStr = AppConfig.getInstance().getString("PrepareWikiDb.db");
 		String disambigStr = AppConfig.getInstance().getString("PrepareWikiDb.disambigStr");
-		String hnDisambigStr = AppConfig.getInstance().getString("PrepareWikiDb.hnDisambigStr");
 		String lang = AppConfig.getInstance().getString("PrepareWikiDb.lang");
 
 		DBConfig dbc = new DBConfig();
@@ -57,7 +56,7 @@ public class PrepareWikiDb {
 				} catch (SQLException e) {
 				}
 
-
+                System.out.println("> Stage 1 is finished.");
 
 			case 2:
 				try {
@@ -86,6 +85,8 @@ public class PrepareWikiDb {
 				} catch (SQLException e) {
 				}
 
+                System.out.println("> Stage 2 is finished.");
+
 			case 3:
 				// add indexes
 				db.executeUpdate(
@@ -99,28 +100,47 @@ public class PrepareWikiDb {
 				db.executeUpdate(
 					"ALTER IGNORE TABLE revision ADD INDEX index1 (rev_text_id ASC), ADD INDEX index2 (`rev_page` ASC);");
 
+                System.out.println("> Stage 3 is finished.");
+
 			case 4:
 				// select only pages that are in default namespace and not redirects
 				db.executeUpdate(
 					"CREATE TABLE page_concepts AS SELECT * FROM page WHERE page_namespace = 0 AND page_is_redirect = 0");
 
+                System.out.println("> Stage 4 is finished.");
+
 			case 5:
 				// find disambiguation pages
 				db.executeUpdate(
 					"CREATE TABLE page_disambig AS SELECT rev_page FROM revision r LEFT JOIN text t " +
-                            "ON r.rev_text_id = t.old_id WHERE t.old_text LIKE \"%{{" + disambigStr + "%\" " +
-                            "OR t.old_text LIKE \"%{{" + hnDisambigStr + "%\"");
+                            "ON r.rev_text_id = t.old_id WHERE t.old_text LIKE \"%{{" + disambigStr + "%\" ");
+
+                /*
+                <disambigStr>disambig</disambigStr>
+                <hnDisambigStr>hndis</hnDisambigStr>
+                 sprawdzic to
+
+                 t.old_text LIKE "%{{hndis%"
+                 t.old_text LIKE "%{{disambig%" <-- nie ma
+                 {{Ujednoznacznienie}}
+                 ujednoznaczenienie, strony ujednoznaczniające
+                 Kategoria:Strony_ujednoznaczniające
+                 http://pl.wikipedia.org/wiki/Szablon:Ujednoznacznienie
+                 */
+
 				db.executeUpdate(
 					"ALTER TABLE page_concepts ADD INDEX ndx_page_id (page_id ASC)");
 				db.executeUpdate(
 					"ALTER TABLE page_disambig ADD INDEX ndx_rev_page (rev_page ASC)");
+
+                System.out.println("> Stage 5 is finished.");
 
 			case 6:
 				// delete disambiguation pages
 				db.executeUpdate(
 					"DELETE page_concepts FROM page_concepts INNER JOIN page_disambig pd ON page_id = pd.rev_page");
 
-
+                System.out.println("> Stage 6 is finished.");
 
 
 			case 7:
@@ -136,11 +156,11 @@ public class PrepareWikiDb {
 				} catch (Exception e) {
 					System.out.println("> concept_mapping cannot be created: " + e);
 				}
-			System.out.println("> concept_mapping has been created");
+			    System.out.println("> concept_mapping has been created");
+                System.out.println("> Stage 6 is finished.");
 
 			case 8:
 				try {
-                    System.out.println("hello 0");
                     db.executeUpdate("DROP TABLE IF EXISTS redirect_mapping");
                     System.out.println("hello 1");
                     db.executeUpdate("CREATE TABLE redirect_mapping AS SELECT redirect.rd_from as page_id, page.page_id " +

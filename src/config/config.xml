@@ -1,28 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
+
+    <!--
 	<ConfigId:ESAIndexBuilder>kw</ConfigId:ESAIndexBuilder>
-	<ESAIndexBuilder:kw>
-		<lang>kw</lang>
-		<db>mysql://root:root@localhost/kwesa_test</db>
-		<esaIndexPath>/tmp/ndx_kw</esaIndexPath>
+	<ESAIndexBuilder:pl>
+		<lang>pl</lang>
+		<db>mysql://root:dupa@localhost/kwesa_test</db>
+		<esaIndexPath>/tmp/ndx_pl</esaIndexPath>
 		<minTermFreq>1</minTermFreq>
-	</ESAIndexBuilder:kw>
+	</ESAIndexBuilder:pl>
+    -->
+
+    <ESAIndexBuilder>
+        <lang>pl</lang>
+        <db>mysql://root:dupa@localhost/esa_idx</db>
+        <esaIndexPath>/media/kozikow/bigchunk/esa_index</esaIndexPath>
+    </ESAIndexBuilder>
 
     <PrepareWikiDb>
         <db>mysql://root:dupa@localhost/esa_pl</db>
-        <disambigStr>disambig</disambigStr>
-        <hnDisambigStr>hndis</hnDisambigStr>
+        <disambigStr>Ujednoznacznienie</disambigStr>
         <lang>pl</lang>
     </PrepareWikiDb>
 
 	<ArticleIndexer>
 		<db>mysql://root:dupa@localhost/esa_pl</db>
-		<indexPath>/tmp/ndx_pl</indexPath>
+		<indexPath>/media/kozikow/bigchunk/esa_index</indexPath>
 		<stopwordsFile>res/stopwords.pl.txt</stopwordsFile>
-		<stemmerClass>org.getopt.stempel.Stemmer</stemmerClass>
+		<stemmerClass>common.lang.RozaProxyPolishStemmer</stemmerClass>
 		<query>
-			<articleIter>SELECT page_id AS id\, page_id AS page_id\, 'cs' AS lang\, '' AS page_title\, text AS content
-                FROM page WHERE page_id > ? LIMIT 100</articleIter>
+			<articleIter>SELECT page_id AS id\, page_id AS page_id\, 'pl' AS lang\, page.page_title\,
+                text.old_text AS content FROM page_concepts AS page
+                LEFT JOIN revision ON page_id = rev_page
+                LEFT JOIN text ON rev_text_id = old_id
+                WHERE page_id > ? LIMIT 100</articleIter>
 		</query>
 	</ArticleIndexer>
 	<ConfigId:ESAAnalyzer>kw</ConfigId:ESAAnalyzer>
