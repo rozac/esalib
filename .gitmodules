@@ -1,1 +1,4 @@
 
+[submodule "morfologik-stemming"]
+	path = morfologik-stemming
+	url = https://github.com/rozac/morfologik-stemming.git
