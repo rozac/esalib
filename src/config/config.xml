@@ -25,7 +25,7 @@
     <ArticleIndexer>
         <db>mysql://root:dupa@localhost/esa_pl</db>
         <indexPath>/media/kozikow/bigchunk/esa_index</indexPath>
-        <stopwordsFile>res/stopwords.pl.txt</stopwordsFile>
+        <stopwordsFile>/media/kozikow/bigchunk/esalib/res/stopwords.pl.txt</stopwordsFile>
         <stemmerClass>common.lang.RozaProxyPolishStemmer</stemmerClass>
         <query>
             <articleIter>SELECT page_id AS id\, page_id AS page_id\, 'pl' AS lang\, page.page_title\,
@@ -36,12 +36,14 @@
         </query>
     </ArticleIndexer>
 
+
     <ESAAnalyzer>
         <dbx>sqlite://root:root@localhost/esadb.db</dbx>
-        <db>mysql://root:dupa@localhost/esa_index</db>
+        <db>mysql://root:dupa@localhost/esa_idx</db>
         <lang>pl</lang>
         <stemmerClass>common.lang.RozaProxyPolishStemmer</stemmerClass>
-        <stopWordsFile>res/stopwords.pl.txt</stopWordsFile>
+        <stopWordsFile>/media/kozikow/bigchunk/esalib/res/stopwords.pl.txt</stopWordsFile>
     </ESAAnalyzer>
+
 
 </config>

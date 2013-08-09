@@ -14,14 +14,13 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import common.graph.Category;
+import common.graph.ReadJsonCategory;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.TermAttribute;
 
 import java.sql.PreparedStatement;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import gnu.trove.TIntFloatHashMap;
 import gnu.trove.TIntIntHashMap;
@@ -32,6 +31,8 @@ import java.util.logging.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.util.Version;
+
+import org.apache.commons.lang.time.StopWatch;
 
 /**
  * Performs search on the index located in database.
@@ -191,12 +192,14 @@ public class ESAAnalyzer {
 		while (ts.incrementToken()) {
 			TermAttribute t = ts.getAttribute(TermAttribute.class);
 			strTerm = t.term();
+            System.out.println(strTerm.toString());
 			if (strTerm.equals(",") || strTerm.equals(".")) {
 				continue;
 			}
 			termList.add(strTerm);
 			numTerms++;
 		}
+
 		ts.end();
 		ts.close();		
 
@@ -505,16 +508,77 @@ public class ESAAnalyzer {
 
 	}
 
-	public static void main(String[] args) throws SQLException, ClassNotFoundException, IOException {
+    private static void bfsTraversal(String text, Category root, ESAAnalyzer esa){
 
-        System.out.println(AppConfig.getInstance().getString("ESAAnalyzer.stopWordsFile"));
+        List<Category> queue = new ArrayList<Category>();
+        queue.add(root);
+
+        PriorityQueue<Category> esaPriorityQueue = new PriorityQueue<Category>(3, new Comparator<Category>() {
+            public int compare(Category c1, Category c2) {
+                if (c1.getEsaCoeff() < c2.getEsaCoeff()) return 1;
+                else return -1;
+            }
+        });
+
+        while(!queue.isEmpty()){
+            Category current = queue.remove(0);
+            current.setEsaCoeff(esa.getRelatedness(text, current.getName()));
+            for(Category c : current.getSubcategories()){
+                queue.add(c);
+            }
+            esaPriorityQueue.add(current);
+        }
+        for(int i = 0; i < 3; i++){
+            Category c = esaPriorityQueue.remove();
+            System.out.println(c.getName() + ": " + c.getEsaCoeff());
+        }
+    }
+
+    public static void testing_main(String[] args) throws SQLException, ClassNotFoundException, IOException {
+
+        StopWatch timer = new StopWatch();
+        timer.start();
 
         ESAAnalyzer esa = new ESAAnalyzer(new DB(AppConfig.getInstance().getString("ESAAnalyzer.db")),
                 AppConfig.getInstance().getString("ESAAnalyzer.lang"));
-		esa.setAnalyzer(new LUCENEWikipediaAnalyzer(AppConfig.getInstance().getString("ESAAnalyzer.stopWordsFile"),
+        esa.setAnalyzer(new LUCENEWikipediaAnalyzer(AppConfig.getInstance().getString("ESAAnalyzer.stopWordsFile"),
                 AppConfig.getInstance().getString("ESAAnalyzer.stemmerClass")));
-		System.out.println(esa.getRelatedness(args[0], args[1]));
-		//System.out.println(esa.getRelatedness("bull", "cow"));
+
+        String abstrakt = "Zliczanie węzłów w bezprzewodowych sieciach sensorowych jest trudnym " +
+                "problemem, ponieważ zasoby węzłów są bardzo ograniczone. Ponadto węzły komunikują się przez zawodne " +
+                "radio, są narażone na awarie oraz mogą się przemieszczać. Proponujemy nową rodzinę rozproszonych " +
+                "algorytmów zliczających węzły w mobilnej sieci sensorowej, opartych o plotkowanie. Nasze algorytmy " +
+                "minimalizują zarówno stan utrzymywany przez każdy z węzłów jak i ilość komunikatów wymienianych między " +
+                "węzłami, zapewniając szybką i dokładną estymatę rozmiaru sieci. Co więcej, algorytmy te dobrze radzą " +
+                "sobie z zawodnością komunikacji radiowej, awariami węzłów oraz ich mobilnością, dzięki czemu dobrze " +
+                "nadają się do sieci sensorowych.";
+        System.out.println(esa.getRelatedness(args[0], abstrakt));
+
+        timer.stop();
+        System.out.println("Time: " + timer.getTime());
+
+
+    }
+
+
+    public static void website_main(String[] args) throws SQLException, ClassNotFoundException, IOException {
+
+        ESAAnalyzer esa = new ESAAnalyzer(new DB(AppConfig.getInstance().getString("ESAAnalyzer.db")),
+                AppConfig.getInstance().getString("ESAAnalyzer.lang"));
+        esa.setAnalyzer(new LUCENEWikipediaAnalyzer(AppConfig.getInstance().getString("ESAAnalyzer.stopWordsFile"),
+                AppConfig.getInstance().getString("ESAAnalyzer.stemmerClass")));
+
+        ReadJsonCategory jsonParser = new ReadJsonCategory();
+        Category root = jsonParser.parseJson();
+        //jsonParser.saveToJson(c);
+        bfsTraversal(args[0], root, esa);
+    }
+
+
+	public static void main(String[] args) throws SQLException, ClassNotFoundException, IOException {
+
+//        website_main(args);
+        testing_main(args);
 	}
 }
 // clean-up index

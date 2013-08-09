@@ -3,14 +3,8 @@ package clldsystem.data;
 import de.tudarmstadt.ukp.wikipedia.parser.ParsedPage;
 import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.MediaWikiParser;
 import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.MediaWikiParserFactory;
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.StringWriter;
+
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.logging.Level;
@@ -53,10 +47,11 @@ public class LUCENEWikipediaAnalyzer extends Analyzer {
 
 		// read stop words
 		if (stopWordsFile != null) {
+
 			InputStream is = new FileInputStream(stopWordsFile);
+
 			BufferedReader br = new BufferedReader(new InputStreamReader(is));
 			ArrayList<String> stopWords = new ArrayList<String>(500);
-
 
 			String line;
 
